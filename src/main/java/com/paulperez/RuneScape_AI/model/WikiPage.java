@@ -2,6 +2,9 @@ package com.paulperez.RuneScape_AI.model;
 
 import jakarta.persistence.*;
 
+// tells spring that wikiPage objects match w wiki_pages table in DB
+@Table(name = "wiki_pages")
+// Tells spring that this object will a table in the DB
 @Entity
 public class WikiPage {
 
