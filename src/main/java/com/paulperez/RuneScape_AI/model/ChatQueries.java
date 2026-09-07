@@ -21,6 +21,11 @@ public class ChatQueries {
     @Column(columnDefinition = "TEXT") // make content variable TEXT in SQL to avoid 255 character limit of String
     private String answer;
 
+    // Each query uses multiple chunks
+    // Chunk can be used my multiple queries
+    // THEREFORE many to many relationship
+    // THEREFORE we need a join table
+    // so the annotation means that when I use getChunksList it actually queries the DB on its own using the join table
     @ManyToMany
     @JoinTable(
             name = "query_chunks",
