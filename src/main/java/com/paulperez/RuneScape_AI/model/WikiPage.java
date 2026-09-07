@@ -12,8 +12,11 @@ public class WikiPage {
     @Id// Tell Hibernate that id is the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)// Tell Hibernate to auto incriment the ID variable for wiki pages. Similar to SERIAL
     private int id;
+
     private String title;
+
     private String URL;
+
     @Column(columnDefinition = "TEXT") // make content variable TEXT in SQL to avoid 255 character limit of String
     private String content;
 

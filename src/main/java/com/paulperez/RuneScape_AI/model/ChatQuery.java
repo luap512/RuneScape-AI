@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "chat_queries")
 // Tells spring that this object will a table in the DB
 @Entity
-public class ChatQueries {
+public class ChatQuery {
     @Id// Tell Hibernate that id is the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)// Tell Hibernate to auto incriment the ID variable for wiki pages. Similar to SERIAL
     private int id;
@@ -35,14 +35,14 @@ public class ChatQueries {
     private List<Chunk> chunkList;
 
     // Full constructor
-    public ChatQueries(int id, String question, String answer) {
+    public ChatQuery(int id, String question, String answer) {
         this.id = id;
         this.question = question;
         this.answer = answer;
     }
 
     // empty constructor
-    public ChatQueries() {
+    public ChatQuery() {
     }
 
     // GETTERS + SETTERS
