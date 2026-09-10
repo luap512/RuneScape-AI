@@ -32,7 +32,10 @@ public class WikiService {
             // .Replace lets us replace all spaces w underscores since spaces will break the URL
             wikiJSON = restClient.get().uri("?action=query&format=json&prop=revisions&rvprop=content&rvslots=main&titles=" + title.replace(" ", "_")).retrieve().body(String.class);
 
+            // if wikiJSON is a redirect
             if(isRedirect(wikiJSON)){
+
+                // notify of redirect
                 wikiJSON = "That Page was a redirect";
             }
         }
