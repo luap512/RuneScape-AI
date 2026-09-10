@@ -10,6 +10,7 @@ public class QueryPackageObject {
     // @JsonProperty tells spring what the JSON field name will be
     @JsonProperty("normalized")
     private List<Object> normalized;
+
     @JsonProperty("pages")
     private Map<String, PageResultObject> pageResultObjectMap;
 

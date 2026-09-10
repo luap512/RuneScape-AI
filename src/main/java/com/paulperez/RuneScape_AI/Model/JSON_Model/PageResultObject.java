@@ -8,39 +8,47 @@ public class PageResultObject {
 
     // @JsonProperty tells spring what the JSON field name will be
     @JsonProperty("pageid")
-    private int pageId;
+    private Integer pageId;
+
     @JsonProperty("ns")
-    private int ns;
+    private Integer ns;
+
     @JsonProperty("title")
     private String titleString;
+
     @JsonProperty("revisions")
     private List<RevisionsPackageObject> revisionsList;
 
+
+    @JsonProperty("missing")
+    private String missing;
+
     // full constructor
-    public PageResultObject(int pageId, int ns, String titleString, List<RevisionsPackageObject> revisionsList) {
+    public PageResultObject(Integer pageId, Integer ns, String titleString, List<RevisionsPackageObject> revisionsList, String missing) {
         this.pageId = pageId;
         this.ns = ns;
         this.titleString = titleString;
         this.revisionsList = revisionsList;
+        this.missing = missing;
     }
 
     // empty constructor
     public PageResultObject() {
     }
 
-    public int getPageId() {
+    public Integer getPageId() {
         return pageId;
     }
 
-    public void setPageId(int pageId) {
+    public void setPageId(Integer pageId) {
         this.pageId = pageId;
     }
 
-    public int getNs() {
+    public Integer getNs() {
         return ns;
     }
 
-    public void setNs(int ns) {
+    public void setNs(Integer ns) {
         this.ns = ns;
     }
 
@@ -58,5 +66,13 @@ public class PageResultObject {
 
     public void setRevisionsList(List<RevisionsPackageObject> revisionsList) {
         this.revisionsList = revisionsList;
+    }
+
+    public String getMissing() {
+        return missing;
+    }
+
+    public void setMissing(String missing) {
+        this.missing = missing;
     }
 }

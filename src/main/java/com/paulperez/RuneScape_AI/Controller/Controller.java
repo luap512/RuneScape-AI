@@ -3,6 +3,7 @@ package com.paulperez.RuneScape_AI.Controller;
 import com.paulperez.RuneScape_AI.DAO.ChatQueriesDAO;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.DAO.WikiPageDAO;
+import com.paulperez.RuneScape_AI.Model.JSON_Model.JSONPackageObject;
 import com.paulperez.RuneScape_AI.Model.WikiPage;
 import com.paulperez.RuneScape_AI.Services.WikiService;
 import org.springframework.http.HttpStatus;
@@ -29,9 +30,9 @@ public class Controller {
     }
 
     @RequestMapping(path = "/{title}", method = RequestMethod.GET)
-    public String getWikiPageByTitle(@PathVariable String title){
+    public JSONPackageObject getWikiPageByTitle(@PathVariable String title){
 
-        String wikiPage = wikiService.getWikiPage(title);
+        JSONPackageObject wikiPage = wikiService.getWikiPage(title);
 
         if(wikiPage == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wiki Page not found");

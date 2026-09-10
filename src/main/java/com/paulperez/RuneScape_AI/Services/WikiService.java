@@ -1,4 +1,5 @@
 package com.paulperez.RuneScape_AI.Services;
+import com.paulperez.RuneScape_AI.Model.JSON_Model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -14,9 +15,9 @@ public class WikiService {
     // METHODS //
 
     // Gets wiki page based on title
-    public String getWikiPage(String title){
+    public JSONPackageObject getWikiPage(String title){
 
-        String wikiJSON = title + " ";
+        JSONPackageObject jsonPackageObject = null;
 
         // Try
         try{
@@ -30,13 +31,14 @@ public class WikiService {
             // rvslots=main says give me the standard compartment
             // titles= is where we put the title from the method call
             // .Replace lets us replace all spaces w underscores since spaces will break the URL
-            wikiJSON = restClient.get().uri("?action=query&format=json&prop=revisions&rvprop=content&rvslots=main&titles=" + title.replace(" ", "_")).retrieve().body(String.class);
+            jsonPackageObject = restClient.get().uri("?action=query&format=json&prop=revisions&rvprop=content&rvslots=main&titles=" + title.replace(" ", "_")).retrieve().body(JSONPackageObject.class);
 
             // if wikiJSON is a redirect
-            if(isRedirect(wikiJSON)){
+            if(isRedirect(jsonPackageObject)){
 
                 // notify of redirect
-                wikiJSON = "That Page was a redirect";
+                System.out.println("Page was a redirect");
+                jsonPackageObject = null;
             }
         }
         // catch exception
@@ -44,20 +46,33 @@ public class WikiService {
 
             // print exception
             System.out.println("****REST CLIENT RESPONSE EXCEPTION****");
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
 
-        return wikiJSON;
+        return jsonPackageObject;
     }
 
     // checks if wiki page is a redirect
-    public boolean isRedirect(String responseJSON){
+    public boolean isRedirect(JSONPackageObject responseJSON){
 
         // create bool variable, false by default
         boolean result = false;
 
+        QueryPackageObject queryPackageObject = responseJSON.getQueryPackageObject();
+
+        PageResultObject pageResultObject =  queryPackageObject.getPageResultObjectMap().values().stream().findFirst().orElse(null);
+
+        RevisionsPackageObject revisionsPackageObject = pageResultObject.getRevisionsList().getFirst();
+
+        SlotsObject slotsObject = revisionsPackageObject.getSlotsObject();
+
+        MainObject mainObject = slotsObject.getMainObject();
+
+        String textContent = mainObject.getTextContent();
+
+
         // if response contains redirect text
-        if(responseJSON.contains("#REDIRECT")){
+        if(textContent.contains(("#REDIRECT"))){
 
             // response is a redirect
             result = true;
