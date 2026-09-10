@@ -1,4 +1,4 @@
-package com.paulperez.RuneScape_AI.model;
+package com.paulperez.RuneScape_AI.Model;
 
 import com.pgvector.PGvector;
 import jakarta.persistence.*;
