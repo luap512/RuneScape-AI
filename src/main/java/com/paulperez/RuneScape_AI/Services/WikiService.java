@@ -101,13 +101,14 @@ public class WikiService {
         MainObject mainObject = slotsObject.getMainObject();
 
         // get the actual text content from the main object
-        String textContent = mainObject.getTextContent();
+        String textContent = mainObject.getTextContent().toLowerCase();
 
-        // if the actual text contains redirect
-        if(textContent.contains(("#REDIRECT"))){
+        // if the actual text contains redirect or is a disambig page
+        if(textContent.contains(("#redirect")) || textContent.contains("{{disambig}}")){
 
-            // response is a redirect
+            // response is a redirect or a disambig page
             result = true;
+
         }
 
         // return result
