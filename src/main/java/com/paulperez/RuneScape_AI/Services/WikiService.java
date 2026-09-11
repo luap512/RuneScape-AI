@@ -33,11 +33,11 @@ public class WikiService {
             // .Replace lets us replace all spaces w underscores since spaces will break the URL
             jsonPackageObject = restClient.get().uri("?action=query&format=json&prop=revisions&rvprop=content&rvslots=main&titles=" + title.replace(" ", "_")).retrieve().body(JSONPackageObject.class);
 
-            // if wikiJSON is a redirect
-            if(isRedirect(jsonPackageObject)){
+            // if wikiJSON represents a usable page
+            if(isUnusablePage(jsonPackageObject)){
 
-                // notify of redirect
-                System.out.println("Page was a redirect");
+                // notify of unusable page
+                System.out.println("Page is unusable");
                 jsonPackageObject = null;
             }
         }
@@ -52,26 +52,58 @@ public class WikiService {
         return jsonPackageObject;
     }
 
-    // checks if wiki page is a redirect
-    public boolean isRedirect(JSONPackageObject responseJSON){
+    // checks if wiki page is usable
+    public boolean isUnusablePage(JSONPackageObject responseJSON){
 
         // create bool variable, false by default
         boolean result = false;
 
+        // DESERIALIZE JSONPackageObject
+
+        // if responseJSON is null
+        if(responseJSON == null){
+
+            // return true (page is unusable)
+            result = true;
+            return result;
+        }
+
+        // get the queryPackageObject from responseJSON
         QueryPackageObject queryPackageObject = responseJSON.getQueryPackageObject();
 
+        // if queryPackageObject is null
+        if(queryPackageObject == null){
+
+            // return true (page is unusable)
+            result = true;
+            return result;
+        }
+
+        // get the pageResultObject from queryPackasgeObject using the pageResultObject map
         PageResultObject pageResultObject =  queryPackageObject.getPageResultObjectMap().values().stream().findFirst().orElse(null);
 
+        // if there is no page the page is not usable
+        // if there are mo revisions the page is not usable
+        if(pageResultObject == null || pageResultObject.getRevisionsList() == null || pageResultObject.getRevisionsList().size() == 0) {
+
+            // return page is unusable
+            result = true;
+            return result;
+        }
+
+        // get the revisionsPackageObject from the pageResultObject using revisionsList
         RevisionsPackageObject revisionsPackageObject = pageResultObject.getRevisionsList().getFirst();
 
+        // get the slotsObject from the revisionsPackageObject
         SlotsObject slotsObject = revisionsPackageObject.getSlotsObject();
 
+        // get the mainObject from the slots object
         MainObject mainObject = slotsObject.getMainObject();
 
+        // get the actual text content from the main object
         String textContent = mainObject.getTextContent();
 
-
-        // if response contains redirect text
+        // if the actual text contains redirect
         if(textContent.contains(("#REDIRECT"))){
 
             // response is a redirect
