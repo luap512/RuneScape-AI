@@ -7,8 +7,10 @@ public class MainObject {
     // @JsonProperty tells spring what the JSON field name will be
     @JsonProperty("contentmodel")
     private String contentModel;
+
     @JsonProperty("contentformat")
     private String contentFormat;
+
     @JsonProperty("*")
     private String textContent;
 

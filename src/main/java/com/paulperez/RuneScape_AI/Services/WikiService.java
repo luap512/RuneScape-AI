@@ -1,5 +1,7 @@
 package com.paulperez.RuneScape_AI.Services;
 import com.paulperez.RuneScape_AI.Model.JSON_Model.*;
+import com.paulperez.RuneScape_AI.Utility.Deserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -12,11 +14,19 @@ public class WikiService {
     // create client to access URL
     private final RestClient restClient = RestClient.create(API_BASE_URL);
 
+    private final Deserializer deserializer;
+
+    @Autowired
+    public WikiService(Deserializer deserializer) {
+        this.deserializer = deserializer;
+    }
+
     // METHODS //
 
     // Gets wiki page based on title
     public JSONPackageObject getWikiPage(String title){
 
+        // create empty package object
         JSONPackageObject jsonPackageObject = null;
 
         // Try
@@ -55,60 +65,10 @@ public class WikiService {
     // checks if wiki page is usable
     public boolean isUnusablePage(JSONPackageObject responseJSON){
 
-        // create bool variable, false by default
         boolean result = false;
 
-        // DESERIALIZE JSONPackageObject
-
-        // if responseJSON is null
-        if(responseJSON == null){
-
-            // return true (page is unusable)
+        if(deserializer.deserialize(responseJSON).equals("")){
             result = true;
-            return result;
-        }
-
-        // get the queryPackageObject from responseJSON
-        QueryPackageObject queryPackageObject = responseJSON.getQueryPackageObject();
-
-        // if queryPackageObject is null
-        if(queryPackageObject == null){
-
-            // return true (page is unusable)
-            result = true;
-            return result;
-        }
-
-        // get the pageResultObject from queryPackasgeObject using the pageResultObject map
-        PageResultObject pageResultObject =  queryPackageObject.getPageResultObjectMap().values().stream().findFirst().orElse(null);
-
-        // if there is no page the page is not usable
-        // if there are mo revisions the page is not usable
-        if(pageResultObject == null || pageResultObject.getRevisionsList() == null || pageResultObject.getRevisionsList().size() == 0) {
-
-            // return page is unusable
-            result = true;
-            return result;
-        }
-
-        // get the revisionsPackageObject from the pageResultObject using revisionsList
-        RevisionsPackageObject revisionsPackageObject = pageResultObject.getRevisionsList().getFirst();
-
-        // get the slotsObject from the revisionsPackageObject
-        SlotsObject slotsObject = revisionsPackageObject.getSlotsObject();
-
-        // get the mainObject from the slots object
-        MainObject mainObject = slotsObject.getMainObject();
-
-        // get the actual text content from the main object
-        String textContent = mainObject.getTextContent().toLowerCase();
-
-        // if the actual text contains redirect or is a disambig page
-        if(textContent.contains(("#redirect")) || textContent.contains("{{disambig}}")){
-
-            // response is a redirect or a disambig page
-            result = true;
-
         }
 
         // return result
