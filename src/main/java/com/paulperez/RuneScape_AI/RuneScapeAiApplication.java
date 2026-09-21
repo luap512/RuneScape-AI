@@ -17,7 +17,7 @@ public class RuneScapeAiApplication {
 				"Drop data here.";
 		Chunker chunker = new Chunker();
 
-		chunker.makeChunks(testString);
+		chunker.makeChunksList(testString);
 	}
 
 
