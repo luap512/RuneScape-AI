@@ -2,6 +2,9 @@ package com.paulperez.RuneScape_AI.Model;
 
 import com.pgvector.PGvector;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 // tells spring that chunk objects match w chunks table in DB
 @Table(name = "chunks")
@@ -22,8 +25,10 @@ public class Chunk {
     private String content;
 
     // tell hibernate to use PGvector to create a vector column in the DB.
-    @Column(name = "embedding", columnDefinition = "vector(768)")
-    private PGvector embeddingVector;
+    @Column(name = "embedding")
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 768)
+    private float[] embeddingVector;
 
 
     // EMPTY CONSTRUCTOR
@@ -31,7 +36,7 @@ public class Chunk {
     }
 
     // FULL CONSTRUCTOR
-    public Chunk(int id, WikiPage wikiPage, String content, PGvector embeddingVector) {
+    public Chunk(int id, WikiPage wikiPage, String content, float[] embeddingVector) {
         this.id = id;
         this.wikiPage = wikiPage;
         this.content = content;
@@ -64,11 +69,11 @@ public class Chunk {
         this.content = content;
     }
 
-    public PGvector getEmbeddingVector() {
+    public float[] getEmbeddingVector() {
         return embeddingVector;
     }
 
-    public void setEmbeddingVector(PGvector embeddingVector) {
+    public void setEmbeddingVector(float[] embeddingVector) {
         this.embeddingVector = embeddingVector;
     }
 }
