@@ -14,6 +14,7 @@ public class WikiService {
     // create client to access URL
     private final RestClient restClient = RestClient.create(API_BASE_URL);
 
+    // deserializer to deserialize JSON data from API call
     private final Deserializer deserializer;
 
     @Autowired
