@@ -1,11 +1,11 @@
 package com.paulperez.RuneScape_AI.AI_Utility;
-
 import com.pgvector.PGvector;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.Model.Chunk;
 import com.paulperez.RuneScape_AI.Model.JSON_Model.*;
 import com.paulperez.RuneScape_AI.Model.WikiPage;
 import com.paulperez.RuneScape_AI.Services.WikiService;
+import com.paulperez.RuneScape_AI.Services.EmbeddingService;
 import com.paulperez.RuneScape_AI.Utility.Deserializer;
 import com.paulperez.RuneScape_AI.Utility.WikiPageMaker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import java.util.List;
 public class ChunkExpo {
 
     private final WikiService wikiService;
+    private final EmbeddingService embeddingService;
     private Chunker chunker;
     private Deserializer deserializer;
     private WikiPageMaker wikiPageMaker;
@@ -27,12 +28,13 @@ public class ChunkExpo {
 
 
     @Autowired
-    public ChunkExpo(WikiService wikiService, Chunker chunker, Deserializer deserializer, WikiPageMaker wikiPageMaker, ChunkDAO chunkDAO) {
+    public ChunkExpo(WikiService wikiService, Chunker chunker, Deserializer deserializer, WikiPageMaker wikiPageMaker, ChunkDAO chunkDAO, EmbeddingService embeddingService) {
         this.wikiService = wikiService;
         this.chunker = chunker;
         this.deserializer = deserializer;
         this.wikiPageMaker = wikiPageMaker;
         this.chunkDAO = chunkDAO;
+        this.embeddingService = embeddingService;
     }
 
     public String fetchAndDeserialize (String pageTitle){
@@ -74,7 +76,16 @@ public class ChunkExpo {
         // loop thru the list of chunk strings
         for(int i = 0; i < chunkStirngsList.size(); i++){
 
-            float[] temp = new float [768];
+            // create a List of floats called embed values based on the embeddingService API call
+            List<Float> embedValues = embeddingService.embedText(chunkStirngsList.get(i)).getEmbedding().getValues();
+
+            // create a temp array of floats the same size as the list from the embeddingService call
+            float [] temp = new float[embedValues.size()];
+
+            // loop thru the List from the embeddingService call
+            for(int j = 0; j < embedValues.size(); j++){
+                temp[j] = embedValues.get(j);
+            }
 
             // make a new empty chunk
             Chunk newChunk = new Chunk();
