@@ -52,6 +52,7 @@ public class EmbeddingService {
         // Try
         try{
 
+            // post embedRequest to Gemmeni API to get embedContentResponse back
             embedContentResponse = restClient.post().header("x-goog-api-key", apiKey).contentType(MediaType.APPLICATION_JSON).body(embedRequest).retrieve().body(EmbedContentResponse.class);
 
         }

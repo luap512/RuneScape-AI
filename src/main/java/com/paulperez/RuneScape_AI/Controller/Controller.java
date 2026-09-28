@@ -4,15 +4,14 @@ import com.paulperez.RuneScape_AI.AI_Utility.ChunkExpo;
 import com.paulperez.RuneScape_AI.DAO.ChatQueriesDAO;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.DAO.WikiPageDAO;
+import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
 import com.paulperez.RuneScape_AI.Model.Chunk;
 import com.paulperez.RuneScape_AI.Model.JSON_Model.JSONPackageObject;
 import com.paulperez.RuneScape_AI.Model.WikiPage;
+import com.paulperez.RuneScape_AI.Services.EmbeddingService;
 import com.paulperez.RuneScape_AI.Services.WikiService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -25,13 +24,15 @@ public class Controller {
     private ChunkDAO chunkDAO;
     private WikiPageDAO wikiPageDAO;
     private WikiService wikiService;
+    private EmbeddingService embeddingService;
     private ChunkExpo chunkExpo;
 
-    public Controller(ChatQueriesDAO chatQueriesDAO, ChunkDAO chunkDAO, WikiPageDAO wikiPageDAO, WikiService wikiService, ChunkExpo chunkExpo) {
+    public Controller(ChatQueriesDAO chatQueriesDAO, ChunkDAO chunkDAO, WikiPageDAO wikiPageDAO, WikiService wikiService, ChunkExpo chunkExpo, EmbeddingService embeddingService) {
         this.chatQueriesDAO = chatQueriesDAO;
         this.chunkDAO = chunkDAO;
         this.wikiPageDAO = wikiPageDAO;
         this.wikiService = wikiService;
+        this.embeddingService = embeddingService;
         this.chunkExpo = chunkExpo;
     }
 
@@ -51,5 +52,11 @@ public class Controller {
     public List<Chunk> addChunks(@PathVariable String title){
         List<Chunk> chunkList = chunkExpo.makeChunkList(title);
         return chunkList;
+    }
+
+    @RequestMapping(path = "/embeddingService", method = RequestMethod.POST)
+    public EmbedContentResponse getEmbededContent(@RequestParam(required = true) String requestText){
+        EmbedContentResponse embedContentResponse =  embeddingService.embedText(requestText);
+        return embedContentResponse;
     }
 }
