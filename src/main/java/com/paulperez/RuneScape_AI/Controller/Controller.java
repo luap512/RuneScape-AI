@@ -5,6 +5,7 @@ import com.paulperez.RuneScape_AI.DAO.ChatQueriesDAO;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.DAO.WikiPageDAO;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
+import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.Embedding;
 import com.paulperez.RuneScape_AI.Model.Chunk;
 import com.paulperez.RuneScape_AI.Model.JSON_Model.JSONPackageObject;
 import com.paulperez.RuneScape_AI.Model.WikiPage;
@@ -58,5 +59,32 @@ public class Controller {
     public EmbedContentResponse getEmbededContent(@RequestParam(required = true) String requestText){
         EmbedContentResponse embedContentResponse =  embeddingService.embedText(requestText);
         return embedContentResponse;
+    }
+
+    @RequestMapping(path = "/query", method = RequestMethod.POST)
+    public float[] getQueryVector(@RequestParam(required = true) String queryText){
+
+        // call embedding service + save response in variable
+        EmbedContentResponse embedContentResponse = embeddingService.embedText(queryText);
+
+        // check if embedding service returns null
+        if(embedContentResponse == null){
+
+            // bad gateway response
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "couldn't get an embedding for that question");
+        }
+
+        // get embedding from embedContentResponse
+        Embedding embedding = embedContentResponse.getEmbedding();
+
+        // create a temp array of floats the same size as the list from the embeddingService call
+        float [] temp = new float[embedding.getValues().size()];
+
+        // loop thru the List from the embeddingService call
+        for(int j = 0; j < embedding.getValues().size(); j++){
+            temp[j] = embedding.getValues().get(j);
+        }
+
+        return temp;
     }
 }
