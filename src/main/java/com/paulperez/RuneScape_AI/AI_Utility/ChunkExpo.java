@@ -106,4 +106,25 @@ public class ChunkExpo {
         // return the full chunk list
         return chunkList;
     }
+
+    public List<Chunk> compareQuestionWikiPageVectors(String question){
+
+        // get embedded question
+
+        List<Float> floatList = embeddingService.embedText(question).getEmbedding().getValues();
+
+        float[] embeddedQuestion = new float[floatList.size()];
+
+        for(int i = 0; i < floatList.size(); i++){
+            embeddedQuestion[i] = floatList.get(i);
+        }
+
+        // compare with DAO
+
+        List<Chunk> similarChunksList = chunkDAO.getSimilarChunks(embeddedQuestion);
+
+        // return list of similar chunks
+        return similarChunksList;
+
+    }
 }

@@ -13,9 +13,11 @@ import com.paulperez.RuneScape_AI.Model.WikiPage;
 import com.paulperez.RuneScape_AI.Services.EmbeddingService;
 import com.paulperez.RuneScape_AI.Services.WikiService;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.comparator.ComparableComparator;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -92,5 +94,11 @@ public class Controller {
         }
 
         return temp;
+    }
+
+    @RequestMapping(path = "/similarChunks", method = RequestMethod.POST)
+    public List<Chunk> getSimilarChunks(@RequestBody(required = true) ChatQuery chatQuery){
+
+        return chunkExpo.compareQuestionWikiPageVectors(chatQuery.getQuestion());
     }
 }
