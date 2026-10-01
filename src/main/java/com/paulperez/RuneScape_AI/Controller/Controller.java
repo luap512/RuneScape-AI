@@ -6,6 +6,7 @@ import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.DAO.WikiPageDAO;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.Embedding;
+import com.paulperez.RuneScape_AI.Model.ChatQuery;
 import com.paulperez.RuneScape_AI.Model.Chunk;
 import com.paulperez.RuneScape_AI.Model.JSON_Model.JSONPackageObject;
 import com.paulperez.RuneScape_AI.Model.WikiPage;
@@ -62,10 +63,15 @@ public class Controller {
     }
 
     @RequestMapping(path = "/query", method = RequestMethod.POST)
-    public float[] getQueryVector(@RequestParam(required = true) String queryText){
+    public float[] getQueryVector(@RequestBody(required = true) ChatQuery chatQuery){
+
+        System.out.println("Question: " +  chatQuery.getQuestion());
+
+        // get question from chatQuery
+        String question = chatQuery.getQuestion();
 
         // call embedding service + save response in variable
-        EmbedContentResponse embedContentResponse = embeddingService.embedText(queryText);
+        EmbedContentResponse embedContentResponse = embeddingService.embedText(question);
 
         // check if embedding service returns null
         if(embedContentResponse == null){

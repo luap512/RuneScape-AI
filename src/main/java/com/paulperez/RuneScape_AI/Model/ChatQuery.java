@@ -13,7 +13,7 @@ import java.util.List;
 public class ChatQuery {
     @Id// Tell Hibernate that id is the primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)// Tell Hibernate to auto incriment the ID variable for wiki pages. Similar to SERIAL
-    private int id;
+    private Integer id;
 
     @Column(columnDefinition = "TEXT") // make content variable TEXT in SQL to avoid 255 character limit of String
     private String question;
@@ -35,7 +35,7 @@ public class ChatQuery {
     private List<Chunk> chunkList;
 
     // Full constructor
-    public ChatQuery(int id, String question, String answer) {
+    public ChatQuery(Integer id, String question, String answer) {
         this.id = id;
         this.question = question;
         this.answer = answer;
@@ -46,11 +46,11 @@ public class ChatQuery {
     }
 
     // GETTERS + SETTERS
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
