@@ -1,4 +1,6 @@
 package com.paulperez.RuneScape_AI.AI_Utility;
+import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.AskQuestionResponse;
+import com.paulperez.RuneScape_AI.Services.QuestionService;
 import com.pgvector.PGvector;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.Model.Chunk;
@@ -21,6 +23,7 @@ public class ChunkExpo {
 
     private final WikiService wikiService;
     private final EmbeddingService embeddingService;
+    private final QuestionService questionService;
     private Chunker chunker;
     private Deserializer deserializer;
     private WikiPageMaker wikiPageMaker;
@@ -28,13 +31,14 @@ public class ChunkExpo {
 
 
     @Autowired
-    public ChunkExpo(WikiService wikiService, Chunker chunker, Deserializer deserializer, WikiPageMaker wikiPageMaker, ChunkDAO chunkDAO, EmbeddingService embeddingService) {
+    public ChunkExpo(WikiService wikiService, Chunker chunker, Deserializer deserializer, WikiPageMaker wikiPageMaker, ChunkDAO chunkDAO, EmbeddingService embeddingService, QuestionService questionService) {
         this.wikiService = wikiService;
         this.chunker = chunker;
         this.deserializer = deserializer;
         this.wikiPageMaker = wikiPageMaker;
         this.chunkDAO = chunkDAO;
         this.embeddingService = embeddingService;
+        this.questionService = questionService;
     }
 
     public String fetchAndDeserialize (String pageTitle){
@@ -126,5 +130,38 @@ public class ChunkExpo {
         // return list of similar chunks
         return similarChunksList;
 
+    }
+
+    public String generatePromptString(String questionString , List<Chunk> chunkList){
+
+        String generatedPromptString =
+                "Act as a professional old school RuneScape player and developer " +
+                "who has spent 100's of hours playing the game and has completed all of its major challenges. " +
+                "Using the context provided, answer the question: " + questionString +
+                        " if you can't find the answer in the context, tell me, and ask specific questions to get to " +
+                        "a better answer. ";
+
+        String contextString = "Context: ";
+
+        for(int i = 0; i < chunkList.size(); i++){
+
+            contextString += " " + chunkList.get(i).getContent();
+
+        }
+
+        return generatedPromptString + contextString;
+    }
+
+    public AskQuestionResponse getQuestionResponse(String questionString){
+
+        // get the list of similar chunks
+        List<Chunk> similarChunks = compareQuestionWikiPageVectors(questionString);
+
+        // build the prompt
+        String promptString = generatePromptString(questionString, similarChunks);
+
+
+        // return the response after sending the full prompt thru the question service
+        return questionService.getAskQuestionResponse(promptString);
     }
 }

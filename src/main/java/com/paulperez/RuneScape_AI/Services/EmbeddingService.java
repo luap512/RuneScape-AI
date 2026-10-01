@@ -66,4 +66,5 @@ public class EmbeddingService {
 
         return embedContentResponse;
     }
+
 }

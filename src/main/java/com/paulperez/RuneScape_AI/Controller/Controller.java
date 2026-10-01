@@ -4,6 +4,7 @@ import com.paulperez.RuneScape_AI.AI_Utility.ChunkExpo;
 import com.paulperez.RuneScape_AI.DAO.ChatQueriesDAO;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
 import com.paulperez.RuneScape_AI.DAO.WikiPageDAO;
+import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.AskQuestionResponse;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.Embedding;
 import com.paulperez.RuneScape_AI.Model.ChatQuery;
@@ -101,4 +102,12 @@ public class Controller {
 
         return chunkExpo.compareQuestionWikiPageVectors(chatQuery.getQuestion());
     }
+
+    @RequestMapping(path = "/askAI", method = RequestMethod.POST)
+    public AskQuestionResponse getAskQuestionResponse(@RequestBody(required = true) ChatQuery chatQuery){
+
+        return chunkExpo.getQuestionResponse(chatQuery.getQuestion());
+    }
+
+
 }
