@@ -1,6 +1,7 @@
 package com.paulperez.RuneScape_AI.Services;
 
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.AskQuestionResponse;
+import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.Candidate;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Sending.Content;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Sending.ContentsListWrapper;
@@ -75,4 +76,43 @@ public class QuestionService {
         // return askQuestionResponse
         return askQuestionResponse;
     }
+
+    public String getAskQuestionResponseString(AskQuestionResponse askQuestionResponse){
+
+        if(askQuestionResponse == null){
+            return "askQuestionResponse is null";
+        }
+        List<Candidate> candidates = askQuestionResponse.getCandidates();
+
+        if(candidates == null || candidates.isEmpty()){
+            return "candidates is null\n";
+        }
+
+        Content content = candidates.getFirst().getContent();
+
+        if(content == null){
+            return "content is null\n";
+        }
+
+        List<Part> partList = content.getParts();
+
+        if( partList == null || partList.isEmpty()){
+            return "part list is empty or null";
+        }
+
+        Part part = partList.getFirst();
+
+        if(part == null){
+            return "part is null\n";
+        }
+
+        return part.getText();
+    }
+
+    public String getAnswerString(String promptString){
+
+        AskQuestionResponse response = getAskQuestionResponse(promptString);
+        return getAskQuestionResponseString(response);
+    }
+
 }

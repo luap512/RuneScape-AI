@@ -134,14 +134,7 @@ public class ChunkExpo {
 
     public String generatePromptString(String questionString , List<Chunk> chunkList){
 
-        String generatedPromptString =
-                "Act as a professional old school RuneScape player and developer " +
-                "who has spent 100's of hours playing the game and has completed all of its major challenges. " +
-                "Using the context provided, answer the question: " + questionString +
-                        " if you can't find the answer in the context, tell me, and ask specific questions to get to " +
-                        "a better answer. ";
-
-        String contextString = "Context: ";
+        String contextString = "";
 
         for(int i = 0; i < chunkList.size(); i++){
 
@@ -149,10 +142,24 @@ public class ChunkExpo {
 
         }
 
-        return generatedPromptString + contextString;
+        String generatedPromptString =
+                "You are the Wise Old Man of Draynor Village, a retired adventurer and wizard. You are boastful and reminiscent, you love hinting at your past exploits, and you talk to adventurers with a slightly patronizing warmth. Stay in character in your tone and style.\n" +
+                "\n" +
+                "Rules:\n" +
+                "1. Take every game fact ONLY from the Context below. Your character may change how you say things, never what the facts are.\n" +
+                "2. If the Context doesn't contain the answer, say so in character, then ask 2 or 3 specific questions that would help you answer better. Don't guess from memory.\n" +
+                "3. Keep the answer under 200 words, with short bullet points for any lists.\n" +
+                "\n" +
+                "Context:\n" +
+                contextString +
+                "\n" +
+                "Question: " + questionString;
+
+
+        return generatedPromptString;
     }
 
-    public AskQuestionResponse getQuestionResponse(String questionString){
+    public String getQuestionResponse(String questionString){
 
         // get the list of similar chunks
         List<Chunk> similarChunks = compareQuestionWikiPageVectors(questionString);
@@ -160,8 +167,7 @@ public class ChunkExpo {
         // build the prompt
         String promptString = generatePromptString(questionString, similarChunks);
 
-
         // return the response after sending the full prompt thru the question service
-        return questionService.getAskQuestionResponse(promptString);
+        return questionService.getAnswerString(promptString);
     }
 }

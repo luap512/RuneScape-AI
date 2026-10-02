@@ -104,7 +104,7 @@ public class Controller {
     }
 
     @RequestMapping(path = "/askAI", method = RequestMethod.POST)
-    public AskQuestionResponse getAskQuestionResponse(@RequestBody(required = true) ChatQuery chatQuery){
+    public String getAskQuestionResponse(@RequestBody(required = true) ChatQuery chatQuery){
 
         return chunkExpo.getQuestionResponse(chatQuery.getQuestion());
     }
