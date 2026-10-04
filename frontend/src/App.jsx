@@ -10,6 +10,7 @@ function App() {
   const [error, setError] = useState(null)
 
   const handleAskQuestion = async () => {
+
     
     setLoading(true)
     setError(null)
@@ -48,6 +49,7 @@ function App() {
           type="button"
           className="counter"
           onClick={() => handleAskQuestion(question)}
+          disabled={question.trim() === '' || loading}
         >
           {loading ? 'Loading...' : 'Ask'}
         </button>
