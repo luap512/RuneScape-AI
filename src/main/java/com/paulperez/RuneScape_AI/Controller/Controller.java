@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wiki")
+@RequestMapping("/api/wiki") @CrossOrigin("http://localhost:5173")
 public class Controller {
 
     private ChatQueriesDAO chatQueriesDAO;
