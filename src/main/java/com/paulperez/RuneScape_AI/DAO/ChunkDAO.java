@@ -11,4 +11,7 @@ public interface ChunkDAO extends JpaRepository<Chunk, Integer> {
 
     @Query(value = "SELECT * FROM chunks ORDER BY embedding <=> CAST(:queryEmbedding AS vector) LIMIT 5", nativeQuery = true)
     public List<Chunk> getSimilarChunks(@Param("queryEmbedding")float[] queryEmbedding);
+
+    @Query(value = "SELECT embedding <=> CAST(:queryEmbedding AS vector) AS Distance FROM chunks ORDER BY distance LIMIT 1", nativeQuery = true)
+    public float getSmallestDistance(@Param("queryEmbedding")float[] queryEmbedding);
 }
