@@ -168,8 +168,21 @@ public class ChunkExpo {
 
     public String getQuestionResponse(String questionString){
 
+        float cutoffDistance = 0.33f;
+
         // get the list of similar chunks
         ChunkListAndDistanceWrapper similarChunks = compareQuestionWikiPageVectors(questionString);
+
+        if(similarChunks.getClosestDistance() > cutoffDistance){
+            System.out.println(" More Context Needed ");
+            System.out.println(" Question String: " + questionString);
+            System.out.println(" Distance " + similarChunks.getClosestDistance());
+        }
+        else{
+            System.out.println(" No more context needed ");
+            System.out.println(" Question String: " + questionString);
+            System.out.println(" Distance " + similarChunks.getClosestDistance());
+        }
 
         // build the prompt
         String promptString = generatePromptString(questionString, similarChunks.getChunkList());

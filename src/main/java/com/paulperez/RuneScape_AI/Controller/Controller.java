@@ -100,7 +100,7 @@ public class Controller {
     @RequestMapping(path = "/similarChunks", method = RequestMethod.POST)
     public List<Chunk> getSimilarChunks(@RequestBody(required = true) ChatQuery chatQuery){
 
-        return chunkExpo.compareQuestionWikiPageVectors(chatQuery.getQuestion());
+        return chunkExpo.compareQuestionWikiPageVectors(chatQuery.getQuestion()).getChunkList();
     }
 
     @RequestMapping(path = "/askAI", method = RequestMethod.POST)
