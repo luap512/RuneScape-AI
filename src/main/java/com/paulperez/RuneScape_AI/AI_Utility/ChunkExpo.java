@@ -1,4 +1,5 @@
 package com.paulperez.RuneScape_AI.AI_Utility;
+import com.paulperez.RuneScape_AI.Model.AI_Model.ChunkListAndDistanceWrapper;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.AskQuestionResponse;
 import com.paulperez.RuneScape_AI.Services.QuestionService;
 import com.pgvector.PGvector;
@@ -111,24 +112,30 @@ public class ChunkExpo {
         return chunkList;
     }
 
-    public List<Chunk> compareQuestionWikiPageVectors(String question){
+    public ChunkListAndDistanceWrapper compareQuestionWikiPageVectors(String question){
 
         // get embedded question
-
         List<Float> floatList = embeddingService.embedText(question).getEmbedding().getValues();
 
+        // create a new float the same size as the list
         float[] embeddedQuestion = new float[floatList.size()];
 
+        // build the list of floats
         for(int i = 0; i < floatList.size(); i++){
             embeddedQuestion[i] = floatList.get(i);
         }
 
-        // compare with DAO
+        // capture the smallest distance
+        float smallestDistance = chunkDAO.getSmallestDistance(embeddedQuestion);
 
+        // compare with DAO
         List<Chunk> similarChunksList = chunkDAO.getSimilarChunks(embeddedQuestion);
 
-        // return list of similar chunks
-        return similarChunksList;
+        // build the wrapper
+        ChunkListAndDistanceWrapper chunkListAndDistanceWrapper =  new ChunkListAndDistanceWrapper(similarChunksList, smallestDistance);
+
+        // return a wrapper containng the list of similar chunks and the distance of the closest chunk
+        return chunkListAndDistanceWrapper;
 
     }
 
@@ -162,10 +169,10 @@ public class ChunkExpo {
     public String getQuestionResponse(String questionString){
 
         // get the list of similar chunks
-        List<Chunk> similarChunks = compareQuestionWikiPageVectors(questionString);
+        ChunkListAndDistanceWrapper similarChunks = compareQuestionWikiPageVectors(questionString);
 
         // build the prompt
-        String promptString = generatePromptString(questionString, similarChunks);
+        String promptString = generatePromptString(questionString, similarChunks.getChunkList());
 
         // return the response after sending the full prompt thru the question service
         return questionService.getAnswerString(promptString);
