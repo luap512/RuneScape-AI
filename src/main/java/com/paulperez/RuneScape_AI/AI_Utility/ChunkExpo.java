@@ -166,7 +166,7 @@ public class ChunkExpo {
         return generatedPromptString;
     }
 
-    public String getQuestionResponse(String questionString){
+    public String getQuestionResponse(String questionString, int recursiveCallsRemaining){
 
         float cutoffDistance = 0.33f;
 
@@ -177,6 +177,8 @@ public class ChunkExpo {
             System.out.println(" More Context Needed ");
             System.out.println(" Question String: " + questionString);
             System.out.println(" Distance " + similarChunks.getClosestDistance());
+            System.out.println(" Recursive Calls Remaining: " + recursiveCallsRemaining);
+
         }
         else{
             System.out.println(" No more context needed ");
