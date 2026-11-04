@@ -174,10 +174,15 @@ public class ChunkExpo {
         ChunkListAndDistanceWrapper similarChunks = compareQuestionWikiPageVectors(questionString);
 
         if(similarChunks.getClosestDistance() > cutoffDistance){
+
+
             System.out.println(" More Context Needed ");
             System.out.println(" Question String: " + questionString);
             System.out.println(" Distance " + similarChunks.getClosestDistance());
             System.out.println(" Recursive Calls Remaining: " + recursiveCallsRemaining);
+            if(recursiveCallsRemaining > 0){
+                return getQuestionResponse(questionString, recursiveCallsRemaining - 1);
+            }
 
         }
         else{
