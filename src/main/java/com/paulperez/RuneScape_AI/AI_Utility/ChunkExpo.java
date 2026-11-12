@@ -71,6 +71,10 @@ public class ChunkExpo {
         // save the content from the page into wikiPage Content variable
         String wikiPageContent = fetchAndDeserialize(pageTitle);
 
+        if(wikiPageContent.isBlank()){
+            return chunkList;
+        }
+
         // 'make' and fetch the wiki page in and from the DB
         WikiPage wikiPage = wikiPageMaker.makeWikiPage(pageTitle, wikiPageContent);
 
@@ -173,18 +177,23 @@ public class ChunkExpo {
         // get the list of similar chunks
         ChunkListAndDistanceWrapper similarChunks = compareQuestionWikiPageVectors(questionString);
 
+        // if context is insufficient
         if(similarChunks.getClosestDistance() > cutoffDistance){
-
 
             System.out.println(" More Context Needed ");
             System.out.println(" Question String: " + questionString);
             System.out.println(" Distance " + similarChunks.getClosestDistance());
             System.out.println(" Recursive Calls Remaining: " + recursiveCallsRemaining);
-            if(recursiveCallsRemaining > 0){
+
+            // add context to DB
+            boolean isEmpty = makeChunkList(questionString).isEmpty();
+
+            if(recursiveCallsRemaining > 0 && !isEmpty){
                 return getQuestionResponse(questionString, recursiveCallsRemaining - 1);
             }
 
         }
+        // if context is close enough
         else{
             System.out.println(" No more context needed ");
             System.out.println(" Question String: " + questionString);
