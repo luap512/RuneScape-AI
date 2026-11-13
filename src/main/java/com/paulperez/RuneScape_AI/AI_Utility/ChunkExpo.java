@@ -1,6 +1,7 @@
 package com.paulperez.RuneScape_AI.AI_Utility;
 import com.paulperez.RuneScape_AI.Model.AI_Model.ChunkListAndDistanceWrapper;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.AskQuestionResponse;
+import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
 import com.paulperez.RuneScape_AI.Services.QuestionService;
 import com.pgvector.PGvector;
 import com.paulperez.RuneScape_AI.DAO.ChunkDAO;
@@ -85,8 +86,16 @@ public class ChunkExpo {
         // loop thru the list of chunk strings
         for(int i = 0; i < chunkStirngsList.size(); i++){
 
+
             // create a List of floats called embed values based on the embeddingService API call
-            List<Float> embedValues = embeddingService.embedText(chunkStirngsList.get(i)).getEmbedding().getValues();
+            EmbedContentResponse embedContentResponse = embeddingService.embedText(chunkStirngsList.get(i));
+
+            if(embedContentResponse == null){
+                System.out.println("Embedded content response is null \n");
+                return chunkList;
+            }
+
+            List<Float> embedValues = embedContentResponse.getEmbedding().getValues();
 
             // create a temp array of floats the same size as the list from the embeddingService call
             float [] temp = new float[embedValues.size()];
@@ -180,13 +189,17 @@ public class ChunkExpo {
         // if context is insufficient
         if(similarChunks.getClosestDistance() > cutoffDistance){
 
+            // extract a relevant wiki page title from the question
+            String relevantWikiPageTitle = extractWikiPageTitleFromQuestion(questionString);
+
             System.out.println(" More Context Needed ");
             System.out.println(" Question String: " + questionString);
             System.out.println(" Distance " + similarChunks.getClosestDistance());
             System.out.println(" Recursive Calls Remaining: " + recursiveCallsRemaining);
+            System.out.println(" Relevant page title: " + relevantWikiPageTitle);
 
             // add context to DB
-            boolean isEmpty = makeChunkList(questionString).isEmpty();
+            boolean isEmpty = makeChunkList(relevantWikiPageTitle).isEmpty();
 
             if(recursiveCallsRemaining > 0 && !isEmpty){
                 return getQuestionResponse(questionString, recursiveCallsRemaining - 1);
@@ -205,5 +218,18 @@ public class ChunkExpo {
 
         // return the response after sending the full prompt thru the question service
         return questionService.getAnswerString(promptString);
+    }
+
+    public String extractWikiPageTitleFromQuestion(String questionString){
+
+        String extractionPrompt = "based on this question: " + questionString  +
+                " give me the title of the old school RuneScape wiki page that is most likely to hold the answer. " +
+                " Give me the title of the wiki page only and nothing else. no punctuation either";
+
+        String relevantWikiPageTitle = "";
+
+        relevantWikiPageTitle = questionService.getAnswerString(extractionPrompt);
+
+        return relevantWikiPageTitle;
     }
 }
