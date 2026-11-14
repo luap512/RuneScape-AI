@@ -179,15 +179,19 @@ public class ChunkExpo {
         return generatedPromptString;
     }
 
-    public String getQuestionResponse(String questionString, int recursiveCallsRemaining){
+    public String getQuestionResponse(String questionString, int recursiveCallsRemaining, Double previousDistanceSentinel){
 
         float cutoffDistance = 0.33f;
 
         // get the list of similar chunks
         ChunkListAndDistanceWrapper similarChunks = compareQuestionWikiPageVectors(questionString);
+        double closestDistance = similarChunks.getClosestDistance();
+
+        // find difference
+        double distanceDelta = previousDistanceSentinel - closestDistance;
 
         // if context is insufficient
-        if(similarChunks.getClosestDistance() > cutoffDistance){
+        if(closestDistance > cutoffDistance && distanceDelta != 0){
 
             // extract a relevant wiki page title from the question
             String relevantWikiPageTitle = extractWikiPageTitleFromQuestion(questionString);
@@ -202,13 +206,13 @@ public class ChunkExpo {
             boolean isEmpty = makeChunkList(relevantWikiPageTitle).isEmpty();
 
             if(recursiveCallsRemaining > 0 && !isEmpty){
-                return getQuestionResponse(questionString, recursiveCallsRemaining - 1);
+                return getQuestionResponse(questionString, recursiveCallsRemaining - 1, closestDistance);
             }
 
         }
         // if context is close enough
         else{
-            System.out.println(" No more context needed ");
+            System.out.println(" No more context needed or context not improving ");
             System.out.println(" Question String: " + questionString);
             System.out.println(" Distance " + similarChunks.getClosestDistance());
         }

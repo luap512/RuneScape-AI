@@ -106,7 +106,8 @@ public class Controller {
     @RequestMapping(path = "/askAI", method = RequestMethod.POST)
     public String getAskQuestionResponse(@RequestBody(required = true) ChatQuery chatQuery){
         int recursiveCallsRemaining = 3;
-        return chunkExpo.getQuestionResponse(chatQuery.getQuestion(), recursiveCallsRemaining);
+        double previousDistanceSentinel = Double.MAX_VALUE;
+        return chunkExpo.getQuestionResponse(chatQuery.getQuestion(), recursiveCallsRemaining, previousDistanceSentinel);
     }
 
 
