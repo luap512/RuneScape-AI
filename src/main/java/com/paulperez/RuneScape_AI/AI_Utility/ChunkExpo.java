@@ -1,4 +1,5 @@
 package com.paulperez.RuneScape_AI.AI_Utility;
+import com.paulperez.RuneScape_AI.DAO.WikiPageDAO;
 import com.paulperez.RuneScape_AI.Model.AI_Model.ChunkListAndDistanceWrapper;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.AskQuestionResponse;
 import com.paulperez.RuneScape_AI.Model.AI_Model.Receiving.EmbedContentResponse;
@@ -30,15 +31,17 @@ public class ChunkExpo {
     private Deserializer deserializer;
     private WikiPageMaker wikiPageMaker;
     private ChunkDAO chunkDAO;
+    private WikiPageDAO wikiPageDAO;
 
 
     @Autowired
-    public ChunkExpo(WikiService wikiService, Chunker chunker, Deserializer deserializer, WikiPageMaker wikiPageMaker, ChunkDAO chunkDAO, EmbeddingService embeddingService, QuestionService questionService) {
+    public ChunkExpo(WikiService wikiService, Chunker chunker, Deserializer deserializer, WikiPageMaker wikiPageMaker, ChunkDAO chunkDAO, WikiPageDAO wikiPageDAO, EmbeddingService embeddingService, QuestionService questionService) {
         this.wikiService = wikiService;
         this.chunker = chunker;
         this.deserializer = deserializer;
         this.wikiPageMaker = wikiPageMaker;
         this.chunkDAO = chunkDAO;
+        this.wikiPageDAO = wikiPageDAO;
         this.embeddingService = embeddingService;
         this.questionService = questionService;
     }
@@ -182,6 +185,7 @@ public class ChunkExpo {
     public String getQuestionResponse(String questionString, int recursiveCallsRemaining, Double previousDistanceSentinel){
 
         float cutoffDistance = 0.33f;
+        boolean isEmpty = true;
 
         // get the list of similar chunks
         ChunkListAndDistanceWrapper similarChunks = compareQuestionWikiPageVectors(questionString);
@@ -202,8 +206,12 @@ public class ChunkExpo {
             System.out.println(" Recursive Calls Remaining: " + recursiveCallsRemaining);
             System.out.println(" Relevant page title: " + relevantWikiPageTitle);
 
-            // add context to DB
-            boolean isEmpty = makeChunkList(relevantWikiPageTitle).isEmpty();
+            // if there are no duplicates in DB
+            if(wikiPageDAO.getNumberOfWikiPages(relevantWikiPageTitle) == 0){
+                // add context to DB
+                isEmpty = makeChunkList(relevantWikiPageTitle).isEmpty();
+            }
+
 
             if(recursiveCallsRemaining > 0 && !isEmpty){
                 return getQuestionResponse(questionString, recursiveCallsRemaining - 1, closestDistance);
